@@ -15,9 +15,9 @@ public class CLI implements GameInterface{
             // 0 == draw | 1 == player 1 wins | 2 == player 2 wins
             if (gameType == 1){
                 if (winState == 1) {
-                    System.out.println("Player 1 wins!");
+                    System.out.println("White wins!");
                 } else if (winState == 2) {
-                    System.out.println("Player 2 wins!");
+                    System.out.println("Black wins!");
                 } else {
                     System.out.println("It's a draw!");
                     System.out.println("winState = " + winState);
