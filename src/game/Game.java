@@ -152,8 +152,8 @@ public class Game {
     }
 
     public int getBestMove(){
-        int max = 0;
-        int best = -10;
+        int max = -10;
+        int best = 0;
         for(int i=0; i < successorEvaluations.size(); i++){
             System.out.println("Col: " + successorEvaluations.get(i)[1] + " - Score: " + successorEvaluations.get(i)[0]);
             if(max < successorEvaluations.get(i)[0]){
@@ -172,9 +172,9 @@ public class Game {
     public int minimax(int depth, int player){
         int bestScore = 0;
         if(player==1){
-            bestScore = -1;
+            bestScore = 1000;
         }else{
-            bestScore = 1;
+            bestScore = -1000;
         }
         List<Integer> positionsAvailable = getAvailableStates();
         int w = checkWin();
@@ -187,13 +187,13 @@ public class Game {
             if(player==1){
                 makeMove(p, 1);
                 currentScore=minimax(depth+1, 2);
-                if(currentScore > bestScore){
+                if(currentScore < bestScore){
                     bestScore = currentScore;
                 }
             }else if(player==2){
                 makeMove(p,2);
                 currentScore = minimax(depth+1, 1);
-                if(currentScore < bestScore){
+                if(currentScore > bestScore){
                     bestScore = currentScore;
                 }
             }
