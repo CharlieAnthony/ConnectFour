@@ -152,7 +152,7 @@ public class Game {
     }
 
     public int getBestMove(){
-        int max = -10;
+        int max = -10000;
         int best = 0;
         for(int i=0; i < successorEvaluations.size(); i++){
             System.out.println("Col: " + successorEvaluations.get(i)[1] + " - Score: " + successorEvaluations.get(i)[0]);
@@ -166,7 +166,7 @@ public class Game {
 
     public void startEvaluations(){
         successorEvaluations = new ArrayList<>();
-        minimax(0, 1);
+        minimax(0, 2);
     }
 
     public int minimax(int depth, int player){
@@ -178,9 +178,9 @@ public class Game {
         }
         List<Integer> positionsAvailable = getAvailableStates();
         int w = checkWin();
-        if(w==1)return -1; // Human win
-        if(w==2)return 1; // AI win
-        if(w==0 || depth >= 5)return 0; // Draw
+        if(w==1)return -1000; // Human win
+        if(w==2)return 1000; // AI win
+        if(w==0 || depth >= 8)return this.evaluateBoard(board); // Draw
         int currentScore = 0;
         for(int i=0; i<positionsAvailable.size(); i++){
             int p = positionsAvailable.get(i);
@@ -204,6 +204,143 @@ public class Game {
             this.removeMove(p);
         }
         return bestScore;
+    }
+
+    private int evaluateBoard(int[][] board){
+        int score = 0;
+
+        // Horizontal check
+        score += evalutateHorizontal(board);
+        // Vertical check
+        score += evalutateVertical(board);
+        // Left Diagonal check
+        score += evalutateLeftDiagonal(board);
+        // Right Diagonal check
+        score += evalutateRightDiagonal(board);
+
+        return score;
+    }
+
+    private int evalutateHorizontal(int[][] board){
+        // 3 in a row = 100 points
+        // 2 in a row = 10 points
+        int score = 0;
+        for(int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS - 3; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i][j+1] &&
+                        board[i][j] == board[i][j+2]){
+                    if(board[i][j] == 1){
+                        score -= 100;
+                    }else{
+                        score += 100;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS - 2; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i][j+1]){
+                    if(board[i][j] == 1){
+                        score -= 10;
+                    }else{
+                        score += 10;
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    private int evalutateVertical(int[][] board){
+        int score = 0;
+        for(int i = 0; i < ROWS - 3; i++){
+            for(int j = 0; j < COLUMNS; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j] &&
+                        board[i][j] == board[i+2][j]){
+                    if(board[i][j] == 1){
+                        score -= 100;
+                    }else{
+                        score += 100;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < ROWS - 2; i++){
+            for(int j = 0; j < COLUMNS; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j]){
+                    if(board[i][j] == 1){
+                        score -= 10;
+                    }else{
+                        score += 10;
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    private int evalutateLeftDiagonal(int[][] board){
+        int score = 0;
+        for(int i = 0; i < ROWS - 3; i++){
+            for(int j = 0; j < COLUMNS - 3; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j+1] &&
+                        board[i][j] == board[i+2][j+2]){
+                    if(board[i][j] == 1){
+                        score -= 100;
+                    }else{
+                        score += 100;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < ROWS - 2; i++){
+            for(int j = 0; j < COLUMNS - 2; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j+1]){
+                    if(board[i][j] == 1){
+                        score -= 10;
+                    }else{
+                        score += 10;
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    private int evalutateRightDiagonal(int[][] board){
+        int score = 0;
+        for(int i = 0; i < ROWS - 3; i++){
+            for(int j = 3; j < COLUMNS; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j-1] &&
+                        board[i][j] == board[i+2][j-2]){
+                    if(board[i][j] == 1){
+                        score -= 100;
+                    }else{
+                        score += 100;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < ROWS - 2; i++){
+            for(int j = 3; j < COLUMNS; j++){
+                if(     board[i][j] != 0 &&
+                        board[i][j] == board[i+1][j-1]){
+                    if(board[i][j] == 1){
+                        score -= 10;
+                    }else{
+                        score += 10;
+                    }
+                }
+            }
+        }
+        return score;
     }
 
     public List<Integer> getAvailableStates(){
