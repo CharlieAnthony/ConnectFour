@@ -1,14 +1,15 @@
 package src.gui;
 
-import java.util.Scanner;
 import src.game.Game;
+
+import java.util.Scanner;
 
 public class CLI implements GameInterface{
         private Game game;
         private int gameType;
 
-        public CLI(Game game) {
-            this.game = game;
+        public CLI() {
+            this.game = new Game();
         }
 
         public void displayWin(int winState) {
