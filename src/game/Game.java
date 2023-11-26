@@ -10,6 +10,7 @@ public class Game {
     private int gameType; // 1 == Player vs Player | 2 == Player vs Computer
     private GameInterface gameInterface;
     private ArrayList<int[]> successorEvaluations;
+    public int currentTurn;
 
     // Constructor
     public Game() {
@@ -20,13 +21,13 @@ public class Game {
     public void startGameLoop(int gameType, GameInterface gameInterface){
         this.gameInterface = gameInterface;
         this.gameType = gameType;
-        int currentTurn = 1;
+        this.currentTurn = 1;
         int winState = -1;
         while(validMoves()){
             // if player vs player
             if(gameType == 1){
                 gameInterface.displayGame();
-                gameInterface.makeMove(currentTurn);
+                gameInterface.makeMove(this.currentTurn);
                 winState = this.checkWin();
                 if (winState != -1) {
                     gameInterface.displayGame();
@@ -36,10 +37,10 @@ public class Game {
             }
             // player vs ai
             else if(gameType == 2){
-                if(currentTurn == 1){
+                if(this.currentTurn == 1){
                     gameInterface.displayGame();
-                    gameInterface.makeMove(currentTurn);
-                }else if(currentTurn == 2){
+                    gameInterface.makeMove(this.currentTurn);
+                }else if(this.currentTurn == 2){
                     this.startEvaluations();
                     int c = this.getBestMove();
                     this.makeMove(c, 2);
@@ -53,11 +54,32 @@ public class Game {
             }
 
             System.out.println("next turn");
-            currentTurn = currentTurn == 1 ? 2 : 1;
+            this.currentTurn = this.currentTurn == 1 ? 2 : 1;
 
         }
         gameInterface.displayGame();
         gameInterface.displayWin(0);
+    }
+
+    public void guiTurn(int col, GameInterface gi){
+        if(makeMove(col, currentTurn)){
+            gi.displayGame();
+            this.currentTurn = this.currentTurn == 1 ? 2 : 1;
+        }
+        if(checkWin() != -1){
+            gi.displayWin(checkWin());
+        }
+        if(gameType == 2 && currentTurn == 2){
+            this.startEvaluations();
+            int c = this.getBestMove();
+            this.makeMove(c, 2);
+            gi.displayGame();
+            this.currentTurn = 1;
+        }
+    }
+
+    public void setGameType(int gameType) {
+        this.gameType = gameType;
     }
 
     private boolean validMoves(){
@@ -151,17 +173,25 @@ public class Game {
         return false;
     }
 
-    public int getBestMove(){
+    public int getBestMove() {
         int max = -10000;
-        int best = 0;
-        for(int i=0; i < successorEvaluations.size(); i++){
+        List<Integer> bestMoves = new ArrayList<>();
+        Random rand = new Random();
+
+        for (int i = 0; i < successorEvaluations.size(); i++) {
             System.out.println("Col: " + successorEvaluations.get(i)[1] + " - Score: " + successorEvaluations.get(i)[0]);
-            if(max < successorEvaluations.get(i)[0]){
+            if (max < successorEvaluations.get(i)[0]) {
                 max = successorEvaluations.get(i)[0];
-                best = i;
+                bestMoves.clear(); // Clear the list as we found a better score
+                bestMoves.add(i);
+            } else if (max == successorEvaluations.get(i)[0]) {
+                bestMoves.add(i); // Add index of this move as it has the best score so far
             }
         }
-        return successorEvaluations.get(best)[1];
+
+        // Select a random move from the best moves
+        int randomBestIndex = bestMoves.get(rand.nextInt(bestMoves.size()));
+        return successorEvaluations.get(randomBestIndex)[1];
     }
 
     public void startEvaluations(){
