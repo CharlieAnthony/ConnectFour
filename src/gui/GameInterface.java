@@ -5,4 +5,6 @@ public interface GameInterface {
     void displayGame();
     void makeMove(int player);
     void displayWin(int winState);
+
+    void displayMessage(int i);
 }

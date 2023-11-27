@@ -1,6 +1,6 @@
 package src.gui;
 
-import src.game.Game;
+import game.Game;
 
 import java.util.Scanner;
 
@@ -104,4 +104,8 @@ public class CLI implements GameInterface{
             }
         }
 
+    @Override
+    public void displayMessage(int i) {
+        System.out.println("something");
+    }
 }

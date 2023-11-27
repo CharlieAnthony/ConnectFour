@@ -1,7 +1,10 @@
-package src.game;
+package game;
 
 import src.gui.GameInterface;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Game {
     private static final int ROWS = 6;
@@ -65,16 +68,25 @@ public class Game {
         if(makeMove(col, currentTurn)){
             gi.displayGame();
             this.currentTurn = this.currentTurn == 1 ? 2 : 1;
+            if(this.currentTurn == 1 && gameType == 1) gi.displayMessage(4);
+            else if (this.currentTurn == 2 && gameType == 1) gi.displayMessage(5);
+        }else{
+            gi.displayMessage(3);
         }
         if(checkWin() != -1){
             gi.displayWin(checkWin());
         }
         if(gameType == 2 && currentTurn == 2){
+            gi.displayMessage(6);
             this.startEvaluations();
             int c = this.getBestMove();
             this.makeMove(c, 2);
             gi.displayGame();
             this.currentTurn = 1;
+            gi.displayMessage(4);
+        }
+        if(checkWin() != -1){
+            gi.displayWin(checkWin());
         }
     }
 
@@ -179,7 +191,6 @@ public class Game {
         Random rand = new Random();
 
         for (int i = 0; i < successorEvaluations.size(); i++) {
-            System.out.println("Col: " + successorEvaluations.get(i)[1] + " - Score: " + successorEvaluations.get(i)[0]);
             if (max < successorEvaluations.get(i)[0]) {
                 max = successorEvaluations.get(i)[0];
                 bestMoves.clear(); // Clear the list as we found a better score
@@ -228,7 +239,6 @@ public class Game {
                 }
             }
             if(depth==0){
-                System.out.println("Col: "+ p + "  - CurrentScore: " + currentScore);
                 successorEvaluations.add(new int[]{currentScore, p});
             }
             this.removeMove(p);

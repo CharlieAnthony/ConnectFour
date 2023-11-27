@@ -2,17 +2,18 @@ package src.gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import src.game.Game;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import game.Game;
 
 public class GUI extends Application implements GameInterface {
 
@@ -22,6 +23,8 @@ public class GUI extends Application implements GameInterface {
     private Stage stage;
     private int selectedCol;
     private BooleanProperty moveMade = new SimpleBooleanProperty(false);
+
+    private Label label;
 
     public GUI() {
         this.game = new Game();
@@ -53,12 +56,24 @@ public class GUI extends Application implements GameInterface {
     }
 
     public void displayWin(int winState) {
-        // TODO: display win state
-        // also need to add a dialog box of some description
-        System.out.println("GUI displayWin");
+        // loop through all circles and make them unclickable
+        for(Circle circle : this.gameGrid.getChildren().toArray(new Circle[0])) {
+            circle.setOnMouseClicked(e -> {});
+        }
+        if(winState == 0) {
+            displayMessage(2);
+        } else if(winState == 1) {
+            displayMessage(0);
+        } else if(winState == 2) {
+            displayMessage(1);
+        }
     }
 
     private void gameView() {
+        VBox vb = new VBox();
+        vb.setAlignment(Pos.CENTER);
+        vb.setSpacing(10);
+
         this.gameGrid = new GridPane();
         this.gameGrid.setAlignment(Pos.CENTER);
         this.gameGrid.setVgap(5); // Vertical gap between nodes
@@ -76,11 +91,13 @@ public class GUI extends Application implements GameInterface {
             }
         }
 
+        this.label = new Label("Click on the board to start!");
+        this.label.setAlignment(Pos.CENTER);
+
+        vb.getChildren().addAll(this.gameGrid, this.label);
 
 
-        System.out.println("setup complete");
-
-        Scene scene = new Scene(this.gameGrid, 640, 480);
+        Scene scene = new Scene(vb, 640, 480);
 
         Stage new_stage = new Stage();
         new_stage.setScene(scene);
@@ -102,6 +119,44 @@ public class GUI extends Application implements GameInterface {
 
     private int getCurrentPlayer() {
         return game.currentTurn;
+    }
+
+    public void displayMessage(int i){
+        /*
+        0 = Player 1 wins
+        1 = Player 2 wins
+        2 = Draw
+        3 = Invalid move
+        4 = Player 1's turn
+        5 = Player 2's turn
+        6 = AI's thinking
+         */
+        switch (i) {
+            case 0:
+                this.label.setText("Player 1 wins! Thanks for playing!");
+                break;
+            case 1:
+                this.label.setText("Player 2 wins! Thanks for playing!");
+                break;
+            case 2:
+                this.label.setText("Draw! Thanks for playing!");
+                break;
+            case 3:
+                this.label.setText("Invalid move!");
+                break;
+            case 4:
+                this.label.setText("Player 1's turn");
+                break;
+            case 5:
+                this.label.setText("Player 2's turn");
+                break;
+            case 6:
+                this.label.setText("AI's thinking");
+                break;
+            default:
+                this.label.setText("");
+                break;
+        }
     }
 
 
